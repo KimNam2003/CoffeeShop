@@ -3,6 +3,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { UsertModule } from './users/user.module';
+import { ProductModule } from './products/product.module';
+import { ProductImageModule } from './productImages/productImages.module';
 
 @Module({
   imports: [
@@ -22,6 +27,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       autoLoadEntities: true, 
       logging: true, // Hiển thị các truy vấn SQL trong console (chỉ nên dùng trong phát triển)
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'), 
+    }),UsertModule,ProductModule,ProductImageModule
   ],
   controllers: [AppController],
   providers: [AppService],

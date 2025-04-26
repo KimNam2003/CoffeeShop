@@ -1,14 +1,15 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { ProductImage } from './product-image.entity';
 
-@Entity()
+@Entity('Products')
 export class Product {
   @PrimaryGeneratedColumn()
   ProductID: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column()
   Name: string;
 
-  @Column('text', { nullable: true })
+  @Column({ nullable: true })
   Description: string;
 
   @Column('decimal', { precision: 10, scale: 2 })
@@ -17,7 +18,7 @@ export class Product {
   @Column({ default: true })
   IsAvailable: boolean;
 
-  @Column('int', { default: 0 })
+  @Column( { default: 0 })
   StockQuantity: number;
 
   @Column({ default: true })
@@ -32,7 +33,4 @@ export class Product {
   @OneToMany(() => ProductImage, (productImage) => productImage.product)
   Images: ProductImage[];
 
-  @ManyToMany(() => ProductCategory)
-  @JoinTable()
-  Categories: ProductCategory[];
 }

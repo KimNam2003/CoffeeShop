@@ -1,14 +1,24 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn } from 'typeorm';
 import { Product } from './product.entity';
 
-@Entity()
+@Entity('ProductImages')
 export class ProductImage {
   @PrimaryGeneratedColumn()
-  ProductImageID: number;
+  ImageID: number;
 
-  @Column({ type: 'varchar', length: 255 })
+  @Column()
+  ProductID: number; 
+
+  @Column({ length: 255 })
   ImageURL: string;
 
-  @ManyToOne(() => Product, (product) => product.Images)
+  @Column({ default: false })
+  IsMain: boolean;
+
+  @CreateDateColumn()
+  CreatedAt: Date;
+
+  @ManyToOne(() => Product, (product) => product.Images, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'ProductID' }) 
   product: Product;
 }
