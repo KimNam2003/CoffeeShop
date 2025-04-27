@@ -29,6 +29,7 @@ import { ProductImageModule } from './productImages/productImages.module';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), 
+      serveRoot: '/public',
     }),UsertModule,ProductModule,ProductImageModule
   ],
   controllers: [AppController],

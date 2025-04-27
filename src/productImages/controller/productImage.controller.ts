@@ -1,12 +1,14 @@
-import { Body, Controller, ParseFilePipeBuilder, Post, UploadedFiles } from "@nestjs/common";
+import { Body, Controller, ParseFilePipeBuilder, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { ProductImageService } from "../service/productImage.service";
 import { CreateProductImageDto } from "../dtos/create-product-image.dto";
+import { FilesInterceptor } from "@nestjs/platform-express";
 
 @Controller('product-images')
 export class ProductImageController {
   constructor(private productImageService: ProductImageService) { }
     
   @Post()
+  @UseInterceptors(FilesInterceptor('files'))
   async create(
     @Body() newPro: CreateProductImageDto, // Tham số này không nhận tệp
     @UploadedFiles(

@@ -34,17 +34,17 @@ export class ProductImageService {
     }
 
     const savedImages = await Promise.all(
-      files.map(async (files) => {
-        const filePath =` ${folderDir}/${files.originalname}`;
+      files.map(async (file) => {
+        const filePath =`${folderDir}/${file.originalname}`;
         try {
-           fs.writeFileSync(filePath, files.buffer);
+           fs.writeFileSync(filePath, file.buffer);
         } catch (err) {
           console.error('Error writing file:', err);
           throw new Error('Failed to save file');
         }
         const image = this.productImageRepository.create({
           ...createDto, 
-          ImageURL: `products/${product.ProductID.toString()}/${files.originalname}`,
+          ImageURL: `products/${product.ProductID.toString()}/${file.originalname}`,
           ProductID: product.ProductID,
         });
         const saved = await this.productImageRepository.save(image);
