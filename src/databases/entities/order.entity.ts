@@ -1,43 +1,43 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+// order.entity.ts
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
+import { Address } from './address.entity';
+import { OrderDetail } from './orderDetai.entity';
 
-@Entity('orders')
+@Entity('Orders')
 export class Order {
   @PrimaryGeneratedColumn()
-  orderId: number;
+  OrderID: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  // @ManyToOne(() => User, user => user.Orders)
+  // @JoinColumn({ name: 'UserID' })
+  // User: User;
 
   @ManyToOne(() => Address)
-  @JoinColumn({ name: 'shippingAddressId' })
-  shippingAddress: Address;
+  @JoinColumn({ name: 'ShippingAddressID' })
+  ShippingAddress: Address;
 
   @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  orderDate: Date;
+  OrderDate: Date;
 
   @Column({ type: 'enum', enum: ['Pending', 'Completed', 'Canceled', 'InProgress'], default: 'Pending' })
-  status: 'Pending' | 'Completed' | 'Canceled' | 'InProgress';
+  Status: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2 })
-  totalAmount: number;
+  @Column('decimal', { precision: 10, scale: 2 })
+  TotalAmount: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, default: 0 })
-  discountAmount: number;
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  DiscountAmount: number;
 
   @Column({ type: 'enum', enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' })
-  paymentStatus: 'Pending' | 'Paid' | 'Failed';
+  PaymentStatus: string;
 
   @Column({ type: 'enum', enum: ['Delivery', 'Pickup'], default: 'Delivery' })
-  shippingType: 'Delivery' | 'Pickup';
+  ShippingType: string;
 
   @Column({ type: 'enum', enum: ['Cash', 'CreditCard', 'E-Wallet', 'BankTransfer'], default: 'Cash' })
-  paymentMethod: 'Cash' | 'CreditCard' | 'E-Wallet' | 'BankTransfer';
+  PaymentMethod: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToMany(() => OrderDetail, orderDetail => orderDetail.Order)
+  OrderDetails: OrderDetail[];
 }

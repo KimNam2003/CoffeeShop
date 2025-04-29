@@ -1,28 +1,27 @@
-// src/addresses/entities/address.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
-import { User } from '../../users/entities/user.entity';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from './user.entity';
 
-@Entity('addresses')
+@Entity('Addresses')
 export class Address {
   @PrimaryGeneratedColumn()
-  addressId: number;
+  AddressID: number;
 
-  @ManyToOne(() => User, user => user.addresses)
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'UserID' })
+  User: User;
 
-  @Column('text')
-  address: string;
+  @Column()
+  Address: string;
 
-  @Column({ type: 'varchar', length: 15 })
-  phoneNumber: string;
+  @Column()
+  PhoneNumber: string;
 
   @Column({ type: 'boolean', default: false })
-  isPrimary: boolean;
+  IsPrimary: boolean;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
+  CreatedAt: Date;
 
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @Column({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  UpdatedAt: Date;
 }

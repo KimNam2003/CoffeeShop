@@ -6,6 +6,7 @@ import * as path from 'path';
 import { ProductImage } from 'src/databases/entities/product-image.entity';
 import { Product } from 'src/databases/entities/product.entity';
 import { CreateProductImageDto } from '../dtos/create-product-image.dto';
+import { instanceToPlain } from 'class-transformer';
 
 
 @Injectable()
@@ -18,7 +19,7 @@ export class ProductImageService {
     private productRepository :Repository<Product>,
   ) {}
 
-  async create(createDto: CreateProductImageDto , files: Express.Multer.File[]): Promise<ProductImage[]> {
+  async create(createDto: CreateProductImageDto , files: Express.Multer.File[]) {
     const product = await this.productRepository.findOne({ where: { ProductID: createDto.ProductID } });
     if (!product) {
       throw new Error('Product not found'); // hoặc ném một exception phù hợp
@@ -48,12 +49,13 @@ export class ProductImageService {
           ProductID: product.ProductID,
         });
         const saved = await this.productImageRepository.save(image);
-        console.log('Image after save:', saved);
         return saved;
         
       })
     );
-    return savedImages; 
+    const newSavedImages = savedImages.map(image => instanceToPlain(image));; 
+    console.log('newSavedImages',newSavedImages)
+    return newSavedImages;
   }
   
   async deleteOneImage(imageId: number): Promise<void> {

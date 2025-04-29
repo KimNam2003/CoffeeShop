@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { UsertModule } from './users/user.module';
 import { ProductModule } from './products/product.module';
 import { ProductImageModule } from './productImages/productImages.module';
+import { CartModule } from './cart/cart.module';
 
 @Module({
   imports: [
@@ -25,12 +26,11 @@ import { ProductImageModule } from './productImages/productImages.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true, 
-      logging: true, // Hiển thị các truy vấn SQL trong console (chỉ nên dùng trong phát triển)
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), 
       serveRoot: '/public',
-    }),UsertModule,ProductModule,ProductImageModule
+    }),UsertModule,ProductModule,ProductImageModule,CartModule
   ],
   controllers: [AppController],
   providers: [AppService],
