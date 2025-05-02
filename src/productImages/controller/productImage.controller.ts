@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Param, ParseFilePipeBuilder, ParseIntPipe, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseFilePipeBuilder, ParseIntPipe, Post, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { ProductImageService } from "../service/productImage.service";
 import { CreateProductImageDto } from "../dtos/create-product-image.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
@@ -10,7 +10,7 @@ export class ProductImageController {
   @Post()
   @UseInterceptors(FilesInterceptor('files'))
   async create(
-    @Body() newPro: CreateProductImageDto, // Tham số này không nhận tệp
+    @Body() newPro: CreateProductImageDto,
     @UploadedFiles(
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
@@ -29,6 +29,12 @@ export class ProductImageController {
     console.log('files', files);
     return await this.productImageService.create(newPro, files);
   }
+
+  @Get('product/:id')
+  async getImagesByProduct(@Param('id') productId: number) {
+    return await this.productImageService.findByProduct(productId);
+  }
+
 
   // Xóa 1 ảnh theo ImageID
   @Delete(':id')

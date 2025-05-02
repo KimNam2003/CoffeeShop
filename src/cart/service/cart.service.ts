@@ -1,18 +1,17 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CartItem } from 'src/databases/entities/cart-item.entity';
 import { Cart } from 'src/databases/entities/cart.entity';
 import { Repository } from 'typeorm';
-import { CartItemDTO } from '../dtos/create-cartItem.dto';
+import { CartItemService } from '../../cartItem/service/cartItem.service';
 
 @Injectable()
 export class CartService {
   constructor(
     @InjectRepository(Cart)
-    private readonly cartRepository: Repository<Cart>,
+    private cartRepository: Repository<Cart>,
 
-    @InjectRepository(CartItem)
-    private readonly cartItemRepository: Repository<CartItem>,
+    @Inject(forwardRef(() => CartItemService)) // ✅ BẮT BUỘC
+    private readonly cartItemService: CartItemService,
   ) {}
 
 
@@ -30,50 +29,13 @@ export class CartService {
       }
     }
 
-  // 2. Thêm sản phẩm vào giỏ hàng
-  async addItemToCart(userId: number, cartItemData: CartItemDTO): Promise<CartItem> {
-    let cart = await this.cartRepository.findOne({
-      where: { userId: userId },
-    });
-  
-    if (!cart) {
-      cart = await this.createCart(userId);
-    }
-  
-    const existingItem = await this.cartItemRepository.findOne({
-      where: {
-        cartId: cart.cartId,
-        productId: cartItemData.productId,
-        variantId: cartItemData.variantId,
-      },
-    });
-  
-    if (existingItem) {
-      existingItem.quantity += cartItemData.quantity;
-      existingItem.price = cartItemData.price;
-      existingItem.total = existingItem.quantity * existingItem.price;
-  
-    return await this.cartItemRepository.save(existingItem);
-    }
-  
-    // Nếu sản phẩm chưa có trong giỏ, thêm mới
-    const newItem = this.cartItemRepository.create({
-      cartId: cart.cartId,
-      productId: cartItemData.productId,
-      variantId: cartItemData.variantId,
-      quantity: cartItemData.quantity,
-      price: cartItemData.price,
-      total: cartItemData.quantity * cartItemData.price,
-    });
-  
-    return await this.cartItemRepository.save(newItem);
-  }
+ 
   
   // 3. Lấy giỏ hàng theo user
   async getCartByUser(userId: number): Promise<Cart> {
     const cart = await this.cartRepository.findOne({
       where: { userId: userId },
-      relations: ['Items'],
+      relations: ['items'],
     });
 
     if (!cart) {
@@ -83,31 +45,18 @@ export class CartService {
     return cart;
   }
 
-  // 4. Cập nhật số lượng sản phẩm trong giỏ hàng
-  async updateItemQuantity(cartItemId: number, quantity: number): Promise<CartItem> {
-    const cartItem = await this.cartItemRepository.findOne({
-      where: { cartItemId: cartItemId },
-    });
-
-    if (!cartItem) {
-      throw new NotFoundException('Cart item not found');
+    // Xóa toàn bộ giỏ hàng
+    async clearCart(userId: number): Promise<void> {
+      const cart = await this.getCartByUser(userId);
+      if (cart) {
+        await this.cartItemService.clearItems(cart.cartId);
+      }
     }
-
-    cartItem.quantity = quantity;
-    return await this.cartItemRepository.save(cartItem);
-  }
-
-  // 5. Xóa sản phẩm khỏi giỏ hàng
-  async removeItemFromCart(cartItemId: number): Promise<void> {
-    const result = await this.cartItemRepository.delete(cartItemId);
-
-    if (result.affected === 0) {
-      throw new NotFoundException('Cart item not found');
+  
+    // Tính tổng tiền giỏ hàng (nếu không dùng column generated)
+    async calculateCartTotal(cartId: number): Promise<number> {
+      const items = await this.cartItemService.getItemsByCartId(cartId);
+      return items.reduce((total, item) => total + item.price * item.quantity, 0);
     }
-  }
-
-  // 6. Xóa toàn bộ giỏ hàng (ví dụ sau khi thanh toán)
-  async clearCart(cartId: number): Promise<void> {
-    await this.cartItemRepository.delete({ cartId: cartId });
-  }
+  
 }

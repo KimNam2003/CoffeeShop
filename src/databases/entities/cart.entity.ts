@@ -1,6 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
 import { User } from './user.entity';
-import { CartItem } from './cart-item.entity';
+import { CartItem } from 'src/databases/entities/cart-item.entity';
 
 @Entity('Carts')
 export class Cart {
@@ -10,7 +10,7 @@ export class Cart {
   @Column({ name: 'UserID' })
   userId: number;
 
-  @ManyToOne(() => User, (user) => user.cart, { onDelete: 'CASCADE' })
+  @OneToOne(() => User, (user) => user.cart, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'UserID' })
   user: User;
 

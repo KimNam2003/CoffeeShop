@@ -6,9 +6,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { UsertModule } from './users/user.module';
-import { ProductModule } from './products/product.module';
+import { ProductModule, } from './products/product.module';
 import { ProductImageModule } from './productImages/productImages.module';
 import { CartModule } from './cart/cart.module';
+import { CartItemModule } from './cartItem/cartItem.module';
+import { PromotionModule } from './promotions/promotion.module';
 
 @Module({
   imports: [
@@ -30,7 +32,7 @@ import { CartModule } from './cart/cart.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), 
       serveRoot: '/public',
-    }),UsertModule,ProductModule,ProductImageModule,CartModule
+    }),UsertModule,ProductModule,ProductImageModule,CartModule,CartItemModule,PromotionModule
   ],
   controllers: [AppController],
   providers: [AppService],

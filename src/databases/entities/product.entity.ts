@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable, OneToMany } from 'typeorm';
 import { ProductImage } from './product-image.entity';
+import { ProductPromotion } from './product-promotion.entity';
 
 @Entity('Products')
 export class Product {
@@ -33,4 +34,6 @@ export class Product {
   @OneToMany(() => ProductImage, (productImage) => productImage.product)
   Images: ProductImage[];
 
+  @OneToMany(() => ProductPromotion, (productPromotion) => productPromotion.product)
+  productPromotions: ProductPromotion[];
 }
