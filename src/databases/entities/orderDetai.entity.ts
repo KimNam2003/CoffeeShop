@@ -29,4 +29,9 @@ export class OrderDetail {
 
   @Column('decimal', { precision: 10, scale: 2 })
   Total: number;
+
+
+
+
+
 }

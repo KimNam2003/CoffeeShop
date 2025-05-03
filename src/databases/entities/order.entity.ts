@@ -1,17 +1,17 @@
 // order.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import { User } from './user.entity';
 import { Address } from './address.entity';
 import { OrderDetail } from './orderDetai.entity';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('Orders')
 export class Order {
   @PrimaryGeneratedColumn()
   OrderID: number;
 
-  // @ManyToOne(() => User, user => user.Orders)
-  // @JoinColumn({ name: 'UserID' })
-  // User: User;
+  @ManyToOne(() => User, (user) => user.Orders)
+  @JoinColumn({ name: 'UserID' })
+  User: User;
 
   @ManyToOne(() => Address)
   @JoinColumn({ name: 'ShippingAddressID' })

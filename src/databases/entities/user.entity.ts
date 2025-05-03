@@ -1,10 +1,9 @@
-// src/users/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, JoinColumn, OneToOne } from 'typeorm';
-import { Order } from './order.entity';
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Cart } from './cart.entity';
+import { Order } from "./order.entity";
 
 
-@Entity()
+@Entity('Users')
 export class User {
   @PrimaryGeneratedColumn()
   UserID: number;
@@ -34,8 +33,8 @@ export class User {
   @UpdateDateColumn({ type: 'datetime' })
   UpdatedAt: Date;
 
-  // @OneToMany(() => Order, order => order.User)
-  // Orders: Order[];
+  @OneToMany(() => Order, order => order.User)
+  Orders: Order[]
   
   @OneToOne(() => Cart, (cart) => cart.user)
   cart: Cart;

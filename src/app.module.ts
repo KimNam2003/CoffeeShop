@@ -11,6 +11,7 @@ import { ProductImageModule } from './productImages/productImages.module';
 import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cartItem/cartItem.module';
 import { PromotionModule } from './promotions/promotion.module';
+import { OrderModule } from './orders/order.module';
 
 @Module({
   imports: [
@@ -32,7 +33,7 @@ import { PromotionModule } from './promotions/promotion.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), 
       serveRoot: '/public',
-    }),UsertModule,ProductModule,ProductImageModule,CartModule,CartItemModule,PromotionModule
+    }),UsertModule,ProductModule,ProductImageModule,CartModule,CartItemModule,PromotionModule,OrderModule
   ],
   controllers: [AppController],
   providers: [AppService],
