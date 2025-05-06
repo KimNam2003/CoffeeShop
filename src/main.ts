@@ -1,6 +1,13 @@
+
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filter';
+
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,11 +16,9 @@ async function bootstrap() {
     origin: 'http://localhost:5173', // Hoặc dùng true để cho phép tất cả origin (chỉ dùng khi dev)
     credentials: true,
   });
-  
+  app.useGlobalFilters(new HttpExceptionFilter()) 
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, 
-      forbidNonWhitelisted: true,
       transform: true,
     }),
   );

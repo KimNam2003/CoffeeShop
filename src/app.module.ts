@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
@@ -12,14 +12,13 @@ import { CartModule } from './cart/cart.module';
 import { CartItemModule } from './cartItem/cartItem.module';
 import { PromotionModule } from './promotions/promotion.module';
 import { OrderModule } from './orders/order.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthMiddleware } from './users/middleware/current-user.middleware';
+
+
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({
-      envFilePath: './config/.env',  // Đọc từ file config/.env
-      isGlobal: true, 
-    }),
-
+  imports:[ConfigModule.forRoot(),
     // Cấu hình TypeOrmModule để kết nối với cơ sở dữ liệu MySQL
     TypeOrmModule.forRoot({
       type: 'mysql', // Hoặc 'postgres', tùy vào DB bạn sử dụng
@@ -33,9 +32,20 @@ import { OrderModule } from './orders/order.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'), 
       serveRoot: '/public',
-    }),UsertModule,ProductModule,ProductImageModule,CartModule,CartItemModule,PromotionModule,OrderModule
+    }),UsertModule,ProductModule,ProductImageModule,CartModule,CartItemModule,PromotionModule,OrderModule, AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AuthMiddleware) 
+      .exclude(
+        { path: 'auth/sign-in', method: RequestMethod.POST },
+        { path: 'users/sign-out', method: RequestMethod.POST },
+      )
+      .forRoutes('*')
+      }
+  }
+

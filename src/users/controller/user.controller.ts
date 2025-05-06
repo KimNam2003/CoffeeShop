@@ -1,43 +1,59 @@
-import { Controller, Post, Get, Param, Body, Put, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  UseGuards,
+} from '@nestjs/common';
+
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { User } from 'src/databases/entities/user.entity';
 import { UserService } from '../service/user.service';
 
-@Controller('users')  // Đường dẫn root cho tất cả các endpoint trong controller này
+@Controller('users')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(private readonly userService: UserService) {}
 
   // Tạo người dùng mới
-  @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+  @Post('sign-out')
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 
-  // Lấy tất cả người dùng
+  // Lấy danh sách người dùng (có phân trang)
   @Get()
-  async findAllUsers(): Promise<User[]> {
-    return this.userService.findAll();
+  async findAll(
+    @Query('page', ParseIntPipe) page: number = 1,
+    @Query('limit', ParseIntPipe) limit: number = 10,
+  ) {
+    return this.userService.findAll(page, limit);
   }
 
   // Lấy người dùng theo ID
   @Get(':id')
-  async findOneUser(@Param('id') id: number): Promise<User> {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOneUser(id);
   }
 
   // Cập nhật thông tin người dùng
-  @Put(':id')
-  async updateUser(
-    @Param('id') id: number,
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  ) {
     return this.userService.updateUser(id, updateUserDto);
   }
 
   // Xóa người dùng
   @Delete(':id')
-  async removeUser(@Param('id') id: number): Promise<void> {
-    return this.userService.removeUser(id);
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    await this.userService.removeUser(id);
+    return { message: 'User deleted successfully' };
   }
+
 }
