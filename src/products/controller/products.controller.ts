@@ -1,14 +1,20 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Patch, Delete, UseGuards } from '@nestjs/common';
 import { CreateProductDto } from '../dtos/create-product.dto';
 import { UpdateProductDto } from '../dtos/update-product.dto';
 import { ProductService } from '../service/product.service';
-
+import { Roles } from 'src/users/decorator/role.decorator';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from 'src/databases/entities/user.entity';
+import { user } from 'src/users/decorator/user.decorator';
 @Controller('products')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post()
-  create(@Body() createProductDto: CreateProductDto) {
+  @UseGuards(AuthGuard)
+  @Roles(['admin'])
+  create(@user() user ,@Body() createProductDto: CreateProductDto) {
+    console.log('user: ',user);
     return this.productService.create(createProductDto);
   }
 
